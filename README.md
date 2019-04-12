@@ -1,6 +1,5 @@
 # vueShop
-跟着课程敲得，有些地方加入自己的修改，完善中
-有些功能还没有实现
+Alipay接口的异步通知问题还没有解决
 
 # requirements
 django2.1+python3.6
