@@ -8,7 +8,7 @@ __date__ = '2019/4/8 7:01 PM'
 
 from rest_framework import serializers
 from goods.models import Goods
-from .models import ShoppingCart,OrderInfo
+from .models import ShoppingCart,OrderInfo, OrderGoods
 from goods.serializer import GoodsSerializer
 from VueShop.settings import private_key_path, ali_pub_key_path
 
@@ -94,14 +94,37 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderInfo
         fields = "__all__"
-class OrderGoodsSerializer(serializers.ModelSerializer):
+
+
+class OrderGoodsSerialzier(serializers.ModelSerializer):
     goods = GoodsSerializer(many=False)
     class Meta:
-        model = OrderInfo
+        model = OrderGoods
         fields = "__all__"
 
 class OrderDetailSerializer(serializers.ModelSerializer):
-    goods = OrderGoodsSerializer(many=True)
+    goods = OrderGoodsSerialzier(many=True)
+    alipay_url = serializers.SerializerMethodField(read_only=True)
+
+    def get_alipay_url(self, obj):
+        alipay = AliPay(
+            appid="2016092600600860",
+            app_notify_url="http://127.0.0.1:8000/alipay/return/",
+            app_private_key_path=private_key_path,
+            alipay_public_key_path=ali_pub_key_path,  # 支付宝的公钥，验证支付宝回传消息使用，不是你自己的公钥,
+            debug=True,  # 默认False,
+            return_url="http://127.0.0.1:8000/alipay/return/"
+        )
+
+        url = alipay.direct_pay(
+            subject=obj.order_sn,
+            out_trade_no=obj.order_sn,
+            total_amount=obj.order_mount,
+        )
+        re_url = "https://openapi.alipaydev.com/gateway.do?{data}".format(data=url)
+
+        return re_url
+
     class Meta:
         model = OrderInfo
         fields = "__all__"

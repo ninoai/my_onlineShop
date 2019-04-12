@@ -110,7 +110,7 @@ class AliPay(object):
         signer = PKCS1_v1_5.new(key)
         digest = SHA256.new()
         digest.update(raw_content.encode("utf8"))
-        if signer.verify(digest, decodebytes(signature.encode("utf8"))):
+        if signer.verify(digest, decodebytes(str(signature).encode("utf8"))):
             return True
         return False
 
@@ -133,10 +133,10 @@ if __name__ == "__main__":
 
     alipay = AliPay(
         appid="2016092600600860",
-        app_notify_url="http://127.0.0.1:8000/alipay/return/",
-        app_private_key_path="../trade/keys/private_2048.txt",
-        alipay_public_key_path="../trade/keys/alipay_key_2048.txt",  # 支付宝的公钥，验证支付宝回传消息使用，不是你自己的公钥,
-        debug=True,  # 默认False,
+        app_notify_url="http://124.133.52.190:8000/alipay/return/",
+        app_private_key_path="../apps/trade/keys/private_2048.txt",
+        alipay_public_key_path="../apps/trade/keys/alipay_key_2048.txt",  # 支付宝的公钥，验证支付宝回传消息使用，不是你自己的公钥,
+        debug=False,  # 默认False,
         return_url="http://127.0.0.1:8000/alipay/return/"
     )
 
